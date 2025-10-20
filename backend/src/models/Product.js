@@ -4,12 +4,14 @@ export default class Product extends Model {
   static init(sequelize) {
     return super.init(
       {
-        name: {
+        product_id: {
+          type: DataTypes.INTEGER,
+          primaryKey: true,
+          autoIncrement: true,
+        },
+        product_name: {
           type: DataTypes.STRING,
           allowNull: false,
-        },
-        description: {
-          type: DataTypes.STRING,
         },
         price: {
           type: DataTypes.FLOAT,
@@ -23,8 +25,8 @@ export default class Product extends Model {
       {
         sequelize,
         modelName: 'Product',
-        tableName: 'Products',
-        timestamps: true, // otomatis buat createdAt & updatedAt
+        tableName: 'product',
+        timestamps: false, // otomatis buat createdAt & updatedAt
       }
     );
   }
