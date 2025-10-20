@@ -1,0 +1,87 @@
+# volumes:
+#   kapim_db_postgres1_nfs:
+#     driver: local
+#     driver_opts:
+#       type: nfs
+#       o: 'addr=${POSTGRES_VOLUME_IP},nolock,soft,rw'
+#       device: ':${POSTGRES_VOLUME_PATH}'
+
+#   kapim_db_postgres1_dir:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ${POSTGRES_VOLUME_PATH}
+
+# networks:
+#   devops_default:
+#     external: true
+
+# services:
+#   kapim_db_postgres1:
+#     build:
+#       context: ${POSTGRES_BUILD_CONTEXT}
+#       dockerfile: Dockerfile
+#     image: kapim-db-postgres:${VERSION}
+#     container_name: kapim-db-postgres
+#     networks:
+#       - default
+#       - devops_default
+#     environment:
+#       - PGDATA=${POSTGRES_PGDATA}
+#       - POSTGRES_DB=${POSTGRES_DB}
+#       - POSTGRES_USER=${POSTGRES_USER}
+#       - POSTGRES_PASSWORD=${POSTGRES_PASS}
+#     volumes:
+#       - 'kapim_db_postgres1_${POSTGRES_VOLUME_TYPE}:/var/lib/postgresql/data/pgdata'
+#     ports:
+#       - '5432:5432'
+#     healthcheck:
+#       test:
+#         [
+#           'CMD-SHELL',
+#           "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
+#         ]
+#       start_period: 1m
+#       start_interval: 10s
+#       interval: 10s
+#       timeout: 5s
+#       retries: 3
+volumes:
+  kapim_db_postgres1_data:
+    driver: local
+
+networks:
+  devops_default:
+    external: true
+
+services:
+  kapim_db_postgres1:
+    build:
+      context: ${POSTGRES_BUILD_CONTEXT}
+      dockerfile: Dockerfile
+    image: kapim-db-postgres:${VERSION}
+    container_name: kapim-db-postgres
+    networks:
+      - default
+      - devops_default
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASS}
+    volumes:
+      - kapim_db_postgres1_data:/var/lib/postgresql/data/pgdata
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
+        ]
+      start_period: 1m
+      start_interval: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
